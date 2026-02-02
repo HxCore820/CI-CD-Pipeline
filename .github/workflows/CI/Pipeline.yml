@@ -1,0 +1,41 @@
+name: CI/CD Pipeline
+
+on:
+  # Chạy tự động khi push code (nhưng sẽ bỏ qua bước SSH)
+  push:
+  
+  # Tạo nút bấm thủ công để chạy (Dùng để kích hoạt SSH)
+  workflow_dispatch:
+    inputs:
+      debug_mode:
+        description: 'Bật chế độ Debug (SSHX)'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Kiểm tra mã nguồn (Checkout)
+        uses: actions/checkout@v3
+
+      # ... Các bước build/test bình thường của bạn ở đây ...
+      - name: ⚙️ Giả lập quá trình Build (Ví dụ)
+        run: echo "Đang chạy build..."
+
+      # -----------------------------------------------------------
+      # Bước này CHỈ CHẠY khi bạn ấn nút và tích chọn "Bật chế độ Debug"
+      # -----------------------------------------------------------
+      - name: 🛠️ Kích hoạt phiên Gỡ lỗi Từ xa (SSHX)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_mode == true }}
+        run: |
+          echo "#######################################################"
+          echo "#                                                     #"
+          echo "#   TRẠNG THÁI: ĐANG CHỜ KẾT NỐI DEBUG                #"
+          echo "#   Hành động: Nhấp vào URL bên dưới để mở Terminal   #"
+          echo "#   Lưu ý: Phiên kết nối sẽ đóng khi job kết thúc     #"
+          echo "#                                                     #"
+          echo "#######################################################"
+          curl -sSf https://sshx.io/get | sh -s run
+          
